@@ -1,8 +1,8 @@
 import "./App.css";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { faker } from "@faker-js/faker";
 import {
   Layout,
-  Menu,
   Form,
   Select,
   Slider,
@@ -10,33 +10,29 @@ import {
   Space,
   Button,
   theme,
+  Table,
 } from "antd";
 import { DownloadOutlined, SwapOutlined } from "@ant-design/icons";
-import { COUNTRIES } from "./constants";
+import { COUNTRIES, COLUMNS } from "./constants";
+import { generateUsers } from "./services";
 
 const { Header, Footer, Content } = Layout;
 
 function App() {
-  const menuItems = [
-    {
-      key: 1,
-      label: "Home",
-    },
-    {
-      key: 2,
-      label: "About",
-    },
-    {
-      key: 3,
-      label: "Contact",
-    },
-  ];
-
   const [valueOfError, setValueOfError] = useState(0);
-
+  const [users, setUsers] = useState([]);
   const {
-    token: { colorBgContainer },
+    token: { colorBgBase },
   } = theme.useToken();
+
+  useEffect(() => {
+    const createUsers = () => {
+      const users = generateUsers(20);
+      setUsers(users);
+    };
+    createUsers();
+  }, []);
+
   return (
     <Layout>
       <Header
@@ -47,7 +43,7 @@ function App() {
           width: "100%",
           display: "flex",
           alignItems: "center",
-          background: colorBgContainer,
+          background: colorBgBase,
         }}
       >
         <Form
@@ -69,7 +65,10 @@ function App() {
             />
           </Form.Item>
           <Form.Item label="Errors">
-            <Space align="center"  style={{ height: "100%", display:'flex', alignItems:'center' }}>
+            <Space
+              align="center"
+              style={{ height: "100%", display: "flex", alignItems: "center" }}
+            >
               <Slider
                 defaultValue={0}
                 min={0}
@@ -111,8 +110,28 @@ function App() {
           </Form.Item>
         </Form>
       </Header>
-      <Content></Content>
-      <Footer></Footer>
+      <Content style={{ padding: "50 100px" }}>
+        <Table
+          columns={COLUMNS}
+          dataSource={users}
+          pagination={false}
+          // scroll={{ y: 500 }}
+        />
+      </Content>
+      <Footer
+        style={{
+          position: "sticky",
+          bottom: 0,
+          zIndex: 1,
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          // background: colorBgContainer,
+        }}
+      >
+        Ant design
+      </Footer>
     </Layout>
   );
 }
