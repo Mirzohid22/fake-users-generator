@@ -1,15 +1,15 @@
 // import { Table } from "antd";
 export const COUNTRIES = [
   {
-    value: "Eng",
+    value: "en",
     label: "Eng",
   },
   {
-    value: "Rus",
+    value: "ru",
     label: "Rus",
   },
   {
-    value: "Ger",
+    value: "de",
     label: "Ger",
   },
 ];
@@ -34,7 +34,11 @@ export const COLUMNS = [
     title: "Email",
     dataIndex: "email",
     key: "email",
-    render: (text) => <a href={`mailto:${text}`} target="_blank" rel="noopener noreferrer">{text}</a>,
+    render: (text) => (
+      <a href={`mailto:${text}`} target="_blank" rel="noopener noreferrer">
+        {text}
+      </a>
+    ),
   },
   {
     title: "Address",

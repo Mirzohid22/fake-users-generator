@@ -21,17 +21,21 @@ const { Header, Footer, Content } = Layout;
 function App() {
   const [valueOfError, setValueOfError] = useState(0);
   const [users, setUsers] = useState([]);
+  const [country, setCountry] = useState("en");
+  const [loading, setLoading] = useState(false);
   const {
     token: { colorBgBase },
   } = theme.useToken();
 
   useEffect(() => {
+    setLoading(true);
     const createUsers = () => {
-      const users = generateUsers(20);
+      const users = generateUsers(10, country);
       setUsers(users);
     };
     createUsers();
-  }, []);
+    setLoading(false);
+  }, [country]);
 
   return (
     <Layout>
@@ -47,6 +51,7 @@ function App() {
         }}
       >
         <Form
+          disabled={loading}
           layout="inline"
           style={{
             width: "100%",
@@ -59,9 +64,12 @@ function App() {
         >
           <Form.Item label="Region">
             <Select
-              // style={{ width: 120 }}
               defaultValue={COUNTRIES[0]}
               options={COUNTRIES}
+              onChange={(value) => {
+                setCountry(value);
+                console.log(value)
+              }}
             />
           </Form.Item>
           <Form.Item label="Errors">
@@ -102,7 +110,6 @@ function App() {
           <Form.Item>
             <Button
               type="primary"
-              // style={{ background: "green" }}
               icon={<DownloadOutlined />}
             >
               Export
@@ -115,7 +122,6 @@ function App() {
           columns={COLUMNS}
           dataSource={users}
           pagination={false}
-          // scroll={{ y: 500 }}
         />
       </Content>
       <Footer
@@ -127,10 +133,17 @@ function App() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          // background: colorBgContainer,
         }}
       >
-        Ant design
+        Itransition training ©2023 Created by {" "}
+        <a
+          href="https://github.com/Mirzohid22"
+          target="_blank"
+          rel="noreferrer"
+          style={{margin: "0 5px"}}
+        >
+           Mirzohid Salimov
+        </a>
       </Footer>
     </Layout>
   );
