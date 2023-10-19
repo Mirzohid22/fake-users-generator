@@ -1,5 +1,6 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { faker } from "@faker-js/faker";
 import {
   Layout,
@@ -11,6 +12,7 @@ import {
   Button,
   theme,
   Table,
+  Spin,
 } from "antd";
 import { DownloadOutlined, SwapOutlined } from "@ant-design/icons";
 import { COUNTRIES, COLUMNS } from "./constants";
@@ -23,6 +25,7 @@ function App() {
   const [users, setUsers] = useState([]);
   const [country, setCountry] = useState("en");
   const [loading, setLoading] = useState(false);
+  const [update, setUpdate] = useState(false);
   const {
     token: { colorBgBase },
   } = theme.useToken();
@@ -30,12 +33,29 @@ function App() {
   useEffect(() => {
     setLoading(true);
     const createUsers = () => {
-      const users = generateUsers(10, country);
+      const users = generateUsers(20, country);
       setUsers(users);
     };
-    createUsers();
+    if (users.length === 0) {
+      createUsers();
+    }
+    console.log("update");
     setLoading(false);
-  }, [country]);
+  }, [country, update]);
+
+  const handleErrorChange = (value) => {
+    console.log(value);
+    setValueOfError(value);
+  };
+
+  const fetchMoreUsers = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const newUsers = generateUsers(users.length + 10, country, users.length);
+      setUsers(users.concat(newUsers));
+      setLoading(false);
+    }, 2000);
+  };
 
   return (
     <Layout>
@@ -68,7 +88,6 @@ function App() {
               options={COUNTRIES}
               onChange={(value) => {
                 setCountry(value);
-                console.log(value)
               }}
             />
           </Form.Item>
@@ -82,49 +101,56 @@ function App() {
                 min={0}
                 max={10}
                 value={valueOfError}
-                onChange={(value) => {
-                  setValueOfError(value);
-                }}
+                onChange={handleErrorChange}
                 style={{ width: 120 }}
               />
               <InputNumber
                 value={valueOfError}
-                onChange={(value) => {
-                  setValueOfError(value);
-                }}
+                onChange={handleErrorChange}
+                min={0}
+                max={1000}
               />
             </Space>
           </Form.Item>
           <Form.Item label="Seed">
             <Space.Compact>
               <InputNumber min={0} max={100000} />
-              <Button
-                type="primary"
-                // style={{ background: "green" }}
-                icon={<SwapOutlined />}
-              >
+              <Button type="primary" icon={<SwapOutlined />}>
                 Random
               </Button>
             </Space.Compact>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              icon={<DownloadOutlined />}
-            >
+            <Button type="primary" icon={<DownloadOutlined />}>
               Export
             </Button>
           </Form.Item>
         </Form>
       </Header>
-      <Content style={{ padding: "50 100px" }}>
-        <Table
-          columns={COLUMNS}
-          dataSource={users}
-          pagination={false}
-        />
+      <Content style={{ padding: "0" }}>
+        <Spin spinning={loading}>
+          <InfiniteScroll
+            next={fetchMoreUsers}
+            hasMore={true}
+            loader={
+              <div style={{ margin: "0 auto" }}>
+                <Spin style={{ margin: "0 auto" }} />
+              </div>
+            }
+            dataLength={users.length}
+            height={900}
+          >
+            <Table
+              rowKey={(row) => row.id}
+              columns={COLUMNS}
+              dataSource={users}
+              pagination={false}
+              scroll={{ x: 1200 }}
+            />
+          </InfiniteScroll>
+        </Spin>
       </Content>
-      <Footer
+      {/* <Footer
         style={{
           position: "sticky",
           bottom: 0,
@@ -135,16 +161,16 @@ function App() {
           justifyContent: "center",
         }}
       >
-        Itransition training ©2023 Created by {" "}
+        Itransition training ©2023 Created by{" "}
         <a
           href="https://github.com/Mirzohid22"
           target="_blank"
           rel="noreferrer"
-          style={{margin: "0 5px"}}
+          style={{ margin: "0 5px" }}
         >
-           Mirzohid Salimov
+          Mirzohid Salimov
         </a>
-      </Footer>
+      </Footer> */}
     </Layout>
   );
 }

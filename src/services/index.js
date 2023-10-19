@@ -13,10 +13,10 @@ const getlocale = (locale) => {
   }
 };
 
-export const generateUsers = (length, locale = "en") => {
+export const generateUsers = (length, locale = "en", start = 0) => {
   const faker = new Faker({ locale: [getlocale(locale)] });
   const users = [];
-  for (let i = 0; i < length; i++) {
+  for (let i = start; i < length; i++) {
     users.push({
       key: i + 1,
       id: faker.database.mongodbObjectId(),
