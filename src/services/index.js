@@ -14,8 +14,9 @@ const getlocale = (locale) => {
   }
 };
 
-export const generateUsers = (length, locale = "en", start = 0) => {
+export const generateUsers = (length, locale = "en", start = 0, seed) => {
   const faker = new Faker({ locale: [getlocale(locale)] });
+  faker.seed(seed);
   const users = [];
   for (let i = start; i < length; i++) {
     users.push({
@@ -30,14 +31,17 @@ export const generateUsers = (length, locale = "en", start = 0) => {
   return users;
 };
 
-const handlePropertyErrors = (property, alphabet) => {
+const handlePropertyErrors = (property, alphabet, locale, seed) => {
+  const faker = new Faker({ locale: [getlocale(locale)] });
+  faker.seed(seed);
+
   let noisyProperty = property;
 
   // Randomly choose an error type (delete, add, or swap)
-  const errorType = Math.floor(Math.random() * 3);
+  const errorType = Math.floor(faker.number.float() * 3);
 
   // Determine the position for the error
-  const position = Math.floor(Math.random() * noisyProperty.length);
+  const position = Math.floor(faker.number.float() * noisyProperty.length);
 
   // Apply the selected error type
   if (errorType === 0) {
@@ -48,7 +52,8 @@ const handlePropertyErrors = (property, alphabet) => {
     }
   } else if (errorType === 1) {
     // Add random character
-    const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+    const randomChar =
+      alphabet[Math.floor(faker.number.float() * alphabet.length)];
     noisyProperty =
       noisyProperty.slice(0, position) +
       randomChar +
@@ -67,29 +72,50 @@ const handlePropertyErrors = (property, alphabet) => {
   return noisyProperty;
 };
 
-export const introduceErrors = (users, locale = "en", errorsRate) => {
+export const introduceErrors = (users, locale = "en", errorsRate, seed) => {
+  const faker = new Faker({ locale: [getlocale(locale)] });
+  faker.seed(seed);
   const noisyUsers = [...users];
   if (errorsRate === 0) {
     return noisyUsers;
   }
 
   for (let user of noisyUsers) {
-    const steps = Math.floor(Math.random() + errorsRate);
+    const steps =
+      errorsRate > 50 ? 50 : Math.floor(faker.number.float() + errorsRate);
+
     for (let i = 0; i < steps; i++) {
       const alphabet = ALPHABETS[locale];
       const property =
-        Object.keys(user)[Math.floor(Math.random() * Object.keys(user).length)];
+        Object.keys(user)[
+          Math.floor(faker.number.float() * Object.keys(user).length)
+        ];
       if (property === "key") {
         continue;
       } else if (property === "id") {
-        handlePropertyErrors(user[property], alphabet + "0123456789");
+        handlePropertyErrors(
+          user[property],
+          alphabet + "0123456789",
+          locale,
+          seed
+        );
       } else if (property === "phone") {
-        handlePropertyErrors(user[property], "+-()0123456789");
+        handlePropertyErrors(user[property], "+-()0123456789", locale, seed);
       } else {
-        user[property] = handlePropertyErrors(user[property], alphabet);
+        user[property] = handlePropertyErrors(
+          user[property],
+          alphabet,
+          locale,
+          seed
+        );
       }
     }
   }
 
   return noisyUsers;
+};
+
+export const createSeed = (locale, seedValue) => {
+  const localeValue = locale === "en" ? 0 : locale === "ru" ? 1 : 2;
+  return [Number(localeValue), Number(seedValue)];
 };

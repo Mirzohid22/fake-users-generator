@@ -1,7 +1,6 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { faker } from "@faker-js/faker";
 import {
   Layout,
   Form,
@@ -16,7 +15,7 @@ import {
 } from "antd";
 import { DownloadOutlined, SwapOutlined } from "@ant-design/icons";
 import { COUNTRIES, COLUMNS } from "./constants";
-import { generateUsers, introduceErrors } from "./services";
+import { generateUsers, introduceErrors, createSeed } from "./services";
 
 const { Header, Content } = Layout;
 
@@ -24,6 +23,7 @@ function App() {
   const [valueOfError, setValueOfError] = useState(0);
   const [users, setUsers] = useState([]);
   const [country, setCountry] = useState("en");
+  const [seed, setSeed] = useState(0);
   const [loading, setLoading] = useState(false);
   const {
     token: { colorBgBase },
@@ -32,7 +32,12 @@ function App() {
   useEffect(() => {
     setLoading(true);
     const createUsers = () => {
-      const users = generateUsers(20, country);
+      const users = generateUsers(
+        20,
+        country,
+        0,
+        createSeed(country, seed)
+      );
       setUsers(users);
     };
     if (users.length === 0) {
@@ -40,22 +45,62 @@ function App() {
     }
     console.log("update");
     setLoading(false);
-  }, [country]);
+  }, []);
+
+  const handleCountryChange = (value) => {
+    setLoading(true);
+    setCountry(value);
+    const newUsers = generateUsers(
+      users.length,
+      value,
+      0,
+      createSeed(value, seed)
+    );
+    setUsers(newUsers);
+    setLoading(false);
+  };
 
   const handleErrorChange = (value) => {
-    console.log(value);
+    setLoading(true);
     setValueOfError(value);
-    const newUsers = introduceErrors(users, country, value);
+    const newUsers = introduceErrors(
+      generateUsers(
+        users.length,
+        country,
+        0,
+        createSeed(country, seed)
+      ),
+      country,
+      value,
+      createSeed(country, seed)
+    );
     setUsers(newUsers);
+    setLoading(false);
   };
 
   const fetchMoreUsers = () => {
     setLoading(true);
     setTimeout(() => {
-      const newUsers = generateUsers(users.length + 10, country, users.length);
+      const newUsers = generateUsers(
+        users.length + 10,
+        country,
+        users.length,
+        createSeed(country, seed)
+      );
       setUsers(users.concat(newUsers));
       setLoading(false);
     }, 2000);
+  };
+
+  const handleSeedChange = (value) => {
+    setSeed(value);
+    const newUsers = generateUsers(
+      users.length,
+      country,
+      0,
+      createSeed(country, value)
+    );
+    setUsers(newUsers);
   };
 
   return (
@@ -87,9 +132,7 @@ function App() {
             <Select
               defaultValue={COUNTRIES[0]}
               options={COUNTRIES}
-              onChange={(value) => {
-                setCountry(value);
-              }}
+              onChange={handleCountryChange}
             />
           </Form.Item>
           <Form.Item label="Errors">
@@ -116,7 +159,12 @@ function App() {
           </Form.Item>
           <Form.Item label="Seed">
             <Space.Compact>
-              <InputNumber min={0} max={100000} />
+              <InputNumber
+                min={0}
+                max={100000}
+                value={seed}
+                onChange={handleSeedChange}
+              />
               <Button type="primary" icon={<SwapOutlined />}>
                 Random
               </Button>
@@ -143,7 +191,7 @@ function App() {
             height={900}
           >
             <Table
-              rowKey={(row) => row.id}
+              rowKey={(row) => row.key}
               columns={COLUMNS}
               dataSource={users}
               pagination={false}
@@ -152,27 +200,6 @@ function App() {
           </InfiniteScroll>
         </Spin>
       </Content>
-      {/* <Footer
-        style={{
-          position: "sticky",
-          bottom: 0,
-          zIndex: 1,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        Itransition training ©2023 Created by{" "}
-        <a
-          href="https://github.com/Mirzohid22"
-          target="_blank"
-          rel="noreferrer"
-          style={{ margin: "0 5px" }}
-        >
-          Mirzohid Salimov
-        </a>
-      </Footer> */}
     </Layout>
   );
 }
