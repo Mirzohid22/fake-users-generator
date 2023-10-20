@@ -16,16 +16,15 @@ import {
 } from "antd";
 import { DownloadOutlined, SwapOutlined } from "@ant-design/icons";
 import { COUNTRIES, COLUMNS } from "./constants";
-import { generateUsers } from "./services";
+import { generateUsers, introduceErrors } from "./services";
 
-const { Header, Footer, Content } = Layout;
+const { Header, Content } = Layout;
 
 function App() {
   const [valueOfError, setValueOfError] = useState(0);
   const [users, setUsers] = useState([]);
   const [country, setCountry] = useState("en");
   const [loading, setLoading] = useState(false);
-  const [update, setUpdate] = useState(false);
   const {
     token: { colorBgBase },
   } = theme.useToken();
@@ -41,11 +40,13 @@ function App() {
     }
     console.log("update");
     setLoading(false);
-  }, [country, update]);
+  }, [country]);
 
   const handleErrorChange = (value) => {
     console.log(value);
     setValueOfError(value);
+    const newUsers = introduceErrors(users, country, value);
+    setUsers(newUsers);
   };
 
   const fetchMoreUsers = () => {
@@ -99,6 +100,7 @@ function App() {
               <Slider
                 defaultValue={0}
                 min={0}
+                step={0.25}
                 max={10}
                 value={valueOfError}
                 onChange={handleErrorChange}

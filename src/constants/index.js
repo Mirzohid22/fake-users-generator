@@ -51,3 +51,9 @@ export const COLUMNS = [
     key: "phone",
   },
 ];
+
+export const ALPHABETS = {
+  en: "abcdefghijklmnopqrstuvwxyz",
+  ru: "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+  de: "abcdefghijklmnopqrstuvwxyzäöüß",
+};
