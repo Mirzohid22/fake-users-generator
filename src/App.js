@@ -32,12 +32,7 @@ function App() {
   useEffect(() => {
     setLoading(true);
     const createUsers = () => {
-      const users = generateUsers(
-        20,
-        country,
-        0,
-        createSeed(country, seed)
-      );
+      const users = generateUsers(20, country, 0, createSeed(country, seed));
       setUsers(users);
     };
     if (users.length === 0) {
@@ -50,13 +45,25 @@ function App() {
   const handleCountryChange = (value) => {
     setLoading(true);
     setCountry(value);
+
     const newUsers = generateUsers(
       users.length,
       value,
       0,
       createSeed(value, seed)
     );
-    setUsers(newUsers);
+    if (valueOfError > 0) {
+      const noisyUsers = introduceErrors(
+        newUsers,
+        value,
+        valueOfError,
+        createSeed(value, seed)
+      );
+      setUsers(noisyUsers);
+    }
+    if (valueOfError === 0) {
+      setUsers(newUsers);
+    }
     setLoading(false);
   };
 
@@ -64,12 +71,7 @@ function App() {
     setLoading(true);
     setValueOfError(value);
     const newUsers = introduceErrors(
-      generateUsers(
-        users.length,
-        country,
-        0,
-        createSeed(country, seed)
-      ),
+      generateUsers(users.length, country, 0, createSeed(country, seed)),
       country,
       value,
       createSeed(country, seed)
@@ -93,6 +95,7 @@ function App() {
   };
 
   const handleSeedChange = (value) => {
+    setLoading(true);
     setSeed(value);
     const newUsers = generateUsers(
       users.length,
@@ -100,7 +103,21 @@ function App() {
       0,
       createSeed(country, value)
     );
+
+    if (valueOfError > 0) {
+      const noisyUsers = introduceErrors(
+        newUsers,
+        country,
+        valueOfError,
+        createSeed(country, value)
+      );
+      setUsers(noisyUsers);
+    }
+    if (valueOfError === 0) {
+      setUsers(newUsers);
+    }
     setUsers(newUsers);
+    setLoading(false);
   };
 
   return (

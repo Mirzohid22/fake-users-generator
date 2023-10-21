@@ -53,7 +53,7 @@ export const COLUMNS = [
 ];
 
 export const ALPHABETS = {
-  en: "abcdefghijklmnopqrstuvwxyz",
-  ru: "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
-  de: "abcdefghijklmnopqrstuvwxyzäöüß",
+  en: "abcdefghijklmnopqrstuvwxyz ",
+  ru: "абвгдеёжзийклмнопрстуфхцчшщъыьэюя ",
+  de: "abcdefghijklmnopqrstuvwxyzäöüß ",
 };
