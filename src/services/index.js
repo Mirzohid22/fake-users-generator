@@ -82,7 +82,7 @@ export const introduceErrors = (users, locale = "en", errorsRate, seed) => {
 
   for (let user of noisyUsers) {
     const steps =
-      errorsRate > 50 ? 50 : Math.floor(faker.number.float() + errorsRate);
+      errorsRate > 100 ? 100 : Math.floor(faker.number.float() + errorsRate);
 
     for (let i = 0; i < steps; i++) {
       const alphabet = ALPHABETS[locale];

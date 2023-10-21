@@ -69,15 +69,17 @@ function App() {
 
   const handleErrorChange = (value) => {
     setLoading(true);
+    setTimeout(() => {
+      const newUsers = introduceErrors(
+        generateUsers(users.length, country, 0, createSeed(country, seed)),
+        country,
+        value,
+        createSeed(country, seed)
+      );
+      setUsers(newUsers);
+      setLoading(false);
+    }, 1500);
     setValueOfError(value);
-    const newUsers = introduceErrors(
-      generateUsers(users.length, country, 0, createSeed(country, seed)),
-      country,
-      value,
-      createSeed(country, seed)
-    );
-    setUsers(newUsers);
-    setLoading(false);
   };
 
   const fetchMoreUsers = () => {
@@ -182,7 +184,15 @@ function App() {
                 value={seed}
                 onChange={handleSeedChange}
               />
-              <Button type="primary" icon={<SwapOutlined />}>
+              <Button
+                type="primary"
+                icon={<SwapOutlined />}
+                onClick={() => {
+                  const randomSeed = Math.floor(Math.random() * 100000);
+                  setSeed(randomSeed);
+                  handleSeedChange(randomSeed);
+                }}
+              >
                 Random
               </Button>
             </Space.Compact>
