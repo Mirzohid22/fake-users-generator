@@ -89,10 +89,21 @@ function App() {
       const newUsers = generateUsers(
         users.length + 10,
         country,
-        users.length,
+        0,
         createSeed(country, seed)
       );
-      setUsers(users.concat(newUsers));
+      if (valueOfError > 0) {
+      const noisyUsers = introduceErrors(
+        newUsers,
+        country,
+        valueOfError,
+        createSeed(country, seed)
+      );
+      setUsers(noisyUsers);
+    }
+    if (valueOfError === 0) {
+      setUsers(newUsers);
+    }
       setLoading(false);
     }, 2000);
   };
