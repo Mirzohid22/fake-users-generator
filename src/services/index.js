@@ -37,21 +37,16 @@ const handlePropertyErrors = (property, alphabet, locale, seed) => {
 
   let noisyProperty = property;
 
-  // Randomly choose an error type (delete, add, or swap)
   const errorType = Math.floor(faker.number.float() * 3);
 
-  // Determine the position for the error
   const position = Math.floor(faker.number.float() * noisyProperty.length);
 
-  // Apply the selected error type
   if (errorType === 0) {
-    // Delete character
     if (noisyProperty.length > 1) {
       noisyProperty =
         noisyProperty.slice(0, position) + noisyProperty.slice(position + 1);
     }
   } else if (errorType === 1) {
-    // Add random character
     const randomChar =
       alphabet[Math.floor(faker.number.float() * alphabet.length)];
     noisyProperty =
@@ -59,7 +54,6 @@ const handlePropertyErrors = (property, alphabet, locale, seed) => {
       randomChar +
       noisyProperty.slice(position);
   } else if (errorType === 2 && position < noisyProperty.length - 1) {
-    // Swap nearby characters
     const char1 = noisyProperty.charAt(position);
     const char2 = noisyProperty.charAt(position + 1);
     noisyProperty =
@@ -81,8 +75,7 @@ export const introduceErrors = (users, locale = "en", errorsRate, seed) => {
   }
 
   for (let user of noisyUsers) {
-    const steps =
-      errorsRate > 100 ? 100 : Math.floor(faker.number.float() + errorsRate);
+    const steps = Math.floor(faker.number.float() + errorsRate);
 
     for (let i = 0; i < steps; i++) {
       const alphabet = ALPHABETS[locale];

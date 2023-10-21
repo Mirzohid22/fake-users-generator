@@ -13,6 +13,7 @@ import {
   Table,
   Spin,
 } from "antd";
+import csvDownload from "json-to-csv-export";
 import { DownloadOutlined, SwapOutlined } from "@ant-design/icons";
 import { COUNTRIES, COLUMNS } from "./constants";
 import { generateUsers, introduceErrors, createSeed } from "./services";
@@ -38,8 +39,8 @@ function App() {
     if (users.length === 0) {
       createUsers();
     }
-    console.log("update");
     setLoading(false);
+    // eslint-disable-next-line
   }, []);
 
   const handleCountryChange = (value) => {
@@ -122,6 +123,16 @@ function App() {
     setLoading(false);
   };
 
+  const handleExportCSV = () => {
+    const dataToConvert = {
+      data: users.map(({ key, ...rest }) => ({ ...rest })),
+      filename: "Fake_users",
+      delimiter: ",",
+      headers: ["id", "Name", "Email", "Address", "Phone number"],
+    };
+    csvDownload(dataToConvert);
+  };
+
   return (
     <Layout>
       <Header
@@ -198,7 +209,11 @@ function App() {
             </Space.Compact>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" icon={<DownloadOutlined />}>
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              onClick={handleExportCSV}
+            >
               Export
             </Button>
           </Form.Item>
